@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "861362040228",
+    "project_id": "subscription-management-afb26",
+    "storage_bucket": "subscription-management-afb26.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861362040228:android:03e524c0e794fbc4aaa531",
+        "android_client_info": {
+          "package_name": "com.example.subscription_management_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAj52sWUEmx6EPzuwaJ6atQbQpMdutqI2g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
