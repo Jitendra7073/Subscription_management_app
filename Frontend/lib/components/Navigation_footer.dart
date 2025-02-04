@@ -30,13 +30,13 @@ class HomeView extends StatelessWidget {
                   child: HomePage(),
                 ),
                 Center(
-                  child: LikePage(),
+                  child: SubscriptionPage(),
                 ),
                 // Center(
                 //   child:SearchPage(),
                 // ),
                 Center(
-                  child:ProfilePage(),
+                  child:UserProfileScreen(),
                 )
               ],
             );

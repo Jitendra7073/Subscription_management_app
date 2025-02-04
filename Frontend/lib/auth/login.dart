@@ -1,142 +1,137 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../main.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
-
-class LogInPage extends StatelessWidget {
-  const LogInPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Login Page',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-      ),
-      home: const LoginPage(),
-    );
-  }
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+class _LoginPageState extends State<LoginPage> {
+  bool _isLoading = false;
+
+  Future<void> loginWithGoogle() async {
+    setState(() => _isLoading = true);
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+      showMessage("Google Sign-In Successful!");
+    } catch (e) {
+      showMessage("Google Sign-In Failed: $e");
+    }
+    setState(() => _isLoading = false);
+  }
+
+  void showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      backgroundColor: Colors.white,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Background Gradient
+          const Spacer(),
+          Image.asset(
+            'assets/logos/login.png',
+            height: 130,
+          ),
+          const Spacer(),
           Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF6A1B9A), Color(0xFF8E24AA)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+            padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 20),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(252, 40, 40, 40),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
               ),
             ),
-          ),
-          Center(
-            child: Container(
-              padding: const EdgeInsets.all(20),
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    spreadRadius: 5,
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // App Logo
-                  const CircleAvatar(
-                    radius: 40,
-                    backgroundImage: AssetImage('assets/logo.png'), // Replace with your logo
-                  ),
-                  const SizedBox(height: 16),
-                  // Description Text
-                  Text(
-                    'Welcome to MyApp',
-                    style: GoogleFonts.lato(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Sign in to continue',
-                    style: GoogleFonts.lato(
-                      fontSize: 16,
-                      color: Colors.black54,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  // Google Login Button
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      _signInWithGoogle(context);
-                    },
-                    icon: const Icon(Icons.login, color: Colors.white),
-                    label: const Text(
-                      'Login through Google',
-                      style: TextStyle(fontSize: 16,color: Colors.white),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            child: Column(
+              children: [
+                AuthButton(
+                  text: _isLoading ? "Signing in..." : "Continue with Google",
+                  onPressed: _isLoading ? null : loginWithGoogle,
+                  imagePath: 'assets/logos/google.png',
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'OR',
+                  style: TextStyle(color: Colors.white70),
+                ),
+                const SizedBox(height: 10),
+                AuthButton(
+                  text: 'Continue with Apple',
+                  onPressed: () {},
+                  imagePath: 'assets/logos/apple.png',
+                ),
+                const SizedBox(height: 30),
+                const Text(
+                  "Stay in Control of your Subscription.",
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ],
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  // Function to handle Google Sign-In
-  Future<void> _signInWithGoogle(BuildContext context) async {
-    try {
-      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) {
-        return; // User canceled the sign-in
-      }
-      GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+class AuthButton extends StatelessWidget {
+  final String text;
+  final VoidCallback? onPressed;
+  final String imagePath;
 
-      AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
+  const AuthButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    required this.imagePath,
+  });
 
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-
-      if (userCredential.user != null) {
-        // Redirect to home screen after successful login
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const MyApp()),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error signing in: $e')),
-      );
-    }
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        side: const BorderSide(color: Colors.white, width: 1),
+        backgroundColor: Colors.transparent,
+        minimumSize: const Size(double.infinity, 50),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+      onPressed: onPressed,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(imagePath, height: 24),
+          const SizedBox(width: 10),
+          Text(
+            text,
+            style: const TextStyle(color: Colors.white),
+          ),
+        ],
+      ),
+    );
   }
 }

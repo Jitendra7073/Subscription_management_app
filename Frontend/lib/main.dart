@@ -1,11 +1,10 @@
-
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'components/Navigation_footer.dart';
 import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart' as provider;
 import './models/settings_model.dart';
 import './auth/login.dart';
@@ -22,6 +21,8 @@ void main() async {
             messagingSenderId: "861362040228",
             appId: "1:861362040228:web:a9ab7f152ad0258daaa531",
             measurementId: "G-QL0X9TMEKF"));
+    // Background Notification Handler
+    // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   } else {
     await Firebase.initializeApp();
   }
@@ -66,7 +67,7 @@ class MyApp extends StatelessWidget {
                 return const HomeView(); // User is logged in
               } else {
                 print('User is not logged in');
-                return const LogInPage(); // User is not logged in
+                return LoginPage(); // User is not logged in
               }
             },
           ),
@@ -75,4 +76,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

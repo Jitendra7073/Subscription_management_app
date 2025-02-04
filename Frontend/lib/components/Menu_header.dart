@@ -64,7 +64,10 @@ class _MenuHeaderState extends State<MenuHeader> {
                     onTap: () {
                       _closeMenu(); // Close the menu
                       // Navigate to settings page or perform an action
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SettingsPage()));
                     },
                   ),
                   FirebaseAuth.instance.currentUser != null
@@ -100,7 +103,7 @@ class _MenuHeaderState extends State<MenuHeader> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const LoginPage()),
+                                  builder: (context) => LoginPage()),
                             );
                           },
                         ),
@@ -141,7 +144,7 @@ class _MenuHeaderState extends State<MenuHeader> {
     return Column(
       children: [
         AppBar(
-          title: const Text('App Name'),
+          title: const Text('TrackItAll'),
           actions: [
             IconButton(
               key: _menuKey,
